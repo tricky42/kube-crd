@@ -19,8 +19,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/yaronha/kube-crd/client"
-	"github.com/yaronha/kube-crd/crd"
+	"github.com/tricky42/kube-crd/client"
+	"github.com/tricky42/kube-crd/crd"
+
+	"flag"
 
 	apiextcs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -28,7 +30,6 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
-	"flag"
 )
 
 // return rest config, if path not specified assume in cluster config
@@ -74,22 +75,22 @@ func main() {
 	crdclient := client.CrdClient(crdcs, scheme, "default")
 
 	// Create a new Example object and write to k8s
-	example := &crd.Example{
+	environment := &crd.Environment{
 		ObjectMeta: meta_v1.ObjectMeta{
-			Name:   "example123",
+			Name:   "myenv",
 			Labels: map[string]string{"mylabel": "test"},
 		},
-		Spec: crd.ExampleSpec{
-			Foo: "example-text",
-			Bar: true,
+		Spec: crd.EnvironmentSpec{
+			GUID:         "<guid>",
+			SubAccountId: "<subaccountid>",
 		},
-		Status: crd.ExampleStatus{
-			State:   "created",
+		Status: crd.EnvironmentStatus{
+			State:   "Created",
 			Message: "Created, not processed yet",
 		},
 	}
 
-	result, err := crdclient.Create(example)
+	result, err := crdclient.Create(environment)
 	if err == nil {
 		fmt.Printf("CREATED: %#v\n", result)
 	} else if apierrors.IsAlreadyExists(err) {
@@ -98,25 +99,29 @@ func main() {
 		panic(err)
 	}
 
-	// List all Example objects
+	// List all Environment objects
 	items, err := crdclient.List(meta_v1.ListOptions{})
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("List:\n%s\n", items)
 
-	// Example Controller
-	// Watch for changes in Example objects and fire Add, Delete, Update callbacks
+	// Environment Controller
+	// Watch for changes in Environment objects and fire Add, Delete, Update callbacks
 	_, controller := cache.NewInformer(
 		crdclient.NewListWatch(),
-		&crd.Example{},
+		&crd.Environment{},
 		time.Minute*10,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
-				fmt.Printf("add: %s \n", obj)
+				fmt.Printf("Add: %s \n", obj)
+				//generate guid
+
+				//create namespace
 			},
 			DeleteFunc: func(obj interface{}) {
-				fmt.Printf("delete: %s \n", obj)
+				//remove namespace
+				fmt.Printf("Delete: %s \n", obj)
 			},
 			UpdateFunc: func(oldObj, newObj interface{}) {
 				fmt.Printf("Update old: %s \n      New: %s\n", oldObj, newObj)

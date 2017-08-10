@@ -29,23 +29,23 @@ import (
 )
 
 const (
-	CRDPlural      string = "examples"
-	CRDGroup       string = "myorg.io"
-	CRDVersion     string = "v1"
-	FullCRDName    string = CRDPlural + "." + CRDGroup
+	EnvironmentsPlural  string = "environments"
+	EnvironmentGroup    string = "sf.yaas.io"
+	EnvironmentVersion  string = "v1"
+	FullEnvironmentName string = EnvironmentsPlural + "." + EnvironmentGroup
 )
 
 // Create the CRD resource, ignore error if it already exists
 func CreateCRD(clientset apiextcs.Interface) error {
 	crd := &apiextv1beta1.CustomResourceDefinition{
-		ObjectMeta: meta_v1.ObjectMeta{Name: FullCRDName},
+		ObjectMeta: meta_v1.ObjectMeta{Name: FullEnvironmentName},
 		Spec: apiextv1beta1.CustomResourceDefinitionSpec{
-			Group:   CRDGroup,
-			Version: CRDVersion,
+			Group:   EnvironmentGroup,
+			Version: EnvironmentVersion,
 			Scope:   apiextv1beta1.NamespaceScoped,
-			Names:   apiextv1beta1.CustomResourceDefinitionNames{
-				Plural: CRDPlural,
-				Kind:   reflect.TypeOf(Example{}).Name(),
+			Names: apiextv1beta1.CustomResourceDefinitionNames{
+				Plural: EnvironmentsPlural,
+				Kind:   reflect.TypeOf(Environment{}).Name(),
 			},
 		},
 	}
@@ -59,37 +59,36 @@ func CreateCRD(clientset apiextcs.Interface) error {
 	// Note the original apiextensions example adds logic to wait for creation and exception handling
 }
 
-// Definition of our CRD Example class
-type Example struct {
+// Definition of our CRD Environment class
+type Environment struct {
 	meta_v1.TypeMeta   `json:",inline"`
 	meta_v1.ObjectMeta `json:"metadata"`
-	Spec               ExampleSpec   `json:"spec"`
-	Status             ExampleStatus `json:"status,omitempty"`
+	Spec               EnvironmentSpec   `json:"spec"`
+	Status             EnvironmentStatus `json:"status,omitempty"`
 }
-type ExampleSpec struct {
-	Foo string `json:"foo"`
-	Bar bool   `json:"bar"`
-	Baz int    `json:"baz,omitempty"`
+type EnvironmentSpec struct {
+	GUID         string `json:"<guid>"`
+	SubAccountId string `json:"<subaccountid>"`
 }
 
-type ExampleStatus struct {
+type EnvironmentStatus struct {
 	State   string `json:"state,omitempty"`
 	Message string `json:"message,omitempty"`
 }
 
-type ExampleList struct {
+type EnvironmentList struct {
 	meta_v1.TypeMeta `json:",inline"`
 	meta_v1.ListMeta `json:"metadata"`
-	Items            []Example `json:"items"`
+	Items            []Environment `json:"items"`
 }
 
 // Create a  Rest client with the new CRD Schema
-var SchemeGroupVersion = schema.GroupVersion{Group: CRDGroup, Version: CRDVersion}
+var SchemeGroupVersion = schema.GroupVersion{Group: EnvironmentGroup, Version: EnvironmentVersion}
 
 func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,
-		&Example{},
-		&ExampleList{},
+		&Environment{},
+		&EnvironmentList{},
 	)
 	meta_v1.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil
