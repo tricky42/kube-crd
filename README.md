@@ -1,3 +1,41 @@
+# Problems introducing godep for dependency management 
+## Steps to reproduce
+* Get dependencies by running dep ensure
+```
+dep ensure
+```
+* Compile go files
+```
+$ go build
+# github.com/tricky42/kube-crd/vendor/k8s.io/client-go/tools/clientcmd/api
+vendor/k8s.io/client-go/tools/clientcmd/api/register.go:35: cannot use Config literal (type *Config) as type runtime.Object in argument to scheme.AddKnownTypes:
+	*Config does not implement runtime.Object (missing DeepCopyObject method)
+# github.com/tricky42/kube-crd/vendor/k8s.io/client-go/pkg/api
+vendor/k8s.io/client-go/pkg/api/defaults.go:26: scheme.AddDefaultingFuncs undefined (type *runtime.Scheme has no field or method AddDefaultingFuncs)
+vendor/k8s.io/client-go/pkg/api/ref.go:44: impossible type assertion:
+	*ObjectReference does not implement runtime.Object (missing DeepCopyObject method)
+vendor/k8s.io/client-go/pkg/api/register.go:80: cannot use Pod literal (type *Pod) as type runtime.Object in argument to scheme.AddKnownTypes:
+	*Pod does not implement runtime.Object (missing DeepCopyObject method)
+vendor/k8s.io/client-go/pkg/api/register.go:81: cannot use PodList literal (type *PodList) as type runtime.Object in argument to scheme.AddKnownTypes:
+	*PodList does not implement runtime.Object (missing DeepCopyObject method)
+vendor/k8s.io/client-go/pkg/api/register.go:82: cannot use PodStatusResult literal (type *PodStatusResult) as type runtime.Object in argument to scheme.AddKnownTypes:
+	*PodStatusResult does not implement runtime.Object (missing DeepCopyObject method)
+vendor/k8s.io/client-go/pkg/api/register.go:83: cannot use PodTemplate literal (type *PodTemplate) as type runtime.Object in argument to scheme.AddKnownTypes:
+	*PodTemplate does not implement runtime.Object (missing DeepCopyObject method)
+vendor/k8s.io/client-go/pkg/api/types.go:3821: undefined: v1.LabelHostname
+vendor/k8s.io/client-go/pkg/api/types.go:3821: undefined: v1.LabelZoneFailureDomain
+vendor/k8s.io/client-go/pkg/api/types.go:3821: undefined: v1.LabelZoneRegion
+vendor/k8s.io/client-go/pkg/api/types.go:3821: const initializer v1.LabelHostname + "," + v1.LabelZoneFailureDomain + "," + v1.LabelZoneRegion is not a constant
+vendor/k8s.io/client-go/pkg/api/register.go:83: too many errors
+```
+
+Somehow the downloaded dependencies can not be compiled :( 
+````
+$ go version
+go version go1.8.3 darwin/amd64      
+```
+
+
 # Kubernetes Custom Resources (CRD) Tutorial
 
 Tutorial for building Kubernetes Custom Resources (CRD) extensions

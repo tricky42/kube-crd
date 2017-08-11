@@ -42,7 +42,7 @@ func CreateCRD(clientset apiextcs.Interface) error {
 		Spec: apiextv1beta1.CustomResourceDefinitionSpec{
 			Group:   EnvironmentGroup,
 			Version: EnvironmentVersion,
-			Scope:   apiextv1beta1.NamespaceScoped,
+			Scope:   apiextv1beta1.ClusterScoped,
 			Names: apiextv1beta1.CustomResourceDefinitionNames{
 				Plural: EnvironmentsPlural,
 				Kind:   reflect.TypeOf(Environment{}).Name(),
