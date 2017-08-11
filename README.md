@@ -4,6 +4,7 @@
 ```
 dep ensure
 ```
+
 * Compile go files
 ```
 $ go build
@@ -30,11 +31,10 @@ vendor/k8s.io/client-go/pkg/api/register.go:83: too many errors
 ```
 
 Somehow the downloaded dependencies can not be compiled :( 
-````
+```
 $ go version
 go version go1.8.3 darwin/amd64      
 ```
-
 
 # Kubernetes Custom Resources (CRD) Tutorial
 
